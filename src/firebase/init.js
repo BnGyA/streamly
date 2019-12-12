@@ -2,14 +2,15 @@ import firebase from 'firebase'
 import 'firebase/firestore'
 
 // Initialize Firebase
+console.log(process.env.API_KEY);
 var config = {
-    apiKey: "AIzaSyD6eKGvT2Pe9jfgckwJFHbC2I3DXB_LhXg",
-    authDomain: "streamly-b3b64.firebaseapp.com",
-    databaseURL: "https://streamly-b3b64.firebaseio.com",
-    projectId: "streamly-b3b64",
-    storageBucket: "streamly-b3b64.appspot.com",
-    messagingSenderId: "225676625012",
-    appId: "1:225676625012:web:8069bc8380bf889d5b7d21"
+    apiKey: process.env.VUE_APP_API_KEY,
+    authDomain: process.env.VUE_APP_AUTH,
+    databaseURL: process.env.VUE_APP_URL,
+    projectId: process.env.VUE_APP_PROJECT_ID,
+    storageBucket: process.env.VUE_APP_STORAGE,
+    messagingSenderId: process.env.VUE_APP_SENDER_ID,
+    appId: process.env.VUE_APP_APP_ID
 };
 const firebaseApp = firebase.initializeApp(config);
 
