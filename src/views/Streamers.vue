@@ -2,26 +2,21 @@
   <div class="hello">
     <h1>{{$route.params.user_id}}</h1>
     <div v-if="!loading">
-        
-      <h2>Twitchers you follow: </h2>
+        <h2>{{lives.length}} Streams Online</h2>
       <ul>
-        <li v-for="acti in activ" v-bind:key="acti.user_id">{{acti.username}} {{acti.status}}</li>
-      </ul>
-      <h2>Twitchers you follow that are live</h2>
-      <ul>
-        <li v-for="live in lives" v-bind:key="live.id">{{live}}</li>
+        <li v-for="acti in activ" v-bind:key="acti.user_id" class="stream">            
+            <div class="stream__tuile" v-bind:class="{isActive: acti.status == 'live'}" :style="{ background : 'url(' + acti.profil_image_url + ')'}"></div>    
+            <p>{{acti.username}}</p>
+        </li>
       </ul>
     </div>
-    <input type="text" name="username" id="username" v-model="username" >
-    <button @click="getId">getId</button>
-    <button @click="getVideo">getVideos</button>
-    <button @click="getFollows">getFollows</button>
   </div>
 </template>
 
 <script>
 //import db from '@/firebase/init'
 import axios from 'axios'
+import _ from 'lodash'
 export default {
   name: 'Streamers',
   data() {
@@ -40,8 +35,8 @@ export default {
   },
   computed: {
     activ: function(){
-      return this.followed
-      .filter(item => !this.deactivated.includes(item.username))
+      return _.orderBy(this.followed
+      .filter(item => !this.deactivated.includes(item.username)), 'status')
     }
   },
   methods:{
@@ -85,6 +80,8 @@ export default {
               // If deactivated or banned
               if(res.data.data.length > 0){
                 let user_id = res.data.data[0].id;
+                let user_profile_image_url = res.data.data[0].profile_image_url;
+                let offline_image_url = res.data.data[0].offline_image_url;
                 // Retreive their live infos
                  axios.get(`https://api.twitch.tv/helix/streams?user_id=${user_id}`, this.config)
                 .then((res)=>{
@@ -94,14 +91,20 @@ export default {
                     this.followed.push({
                       'username': to_name, 
                       'status': 'live', 
-                      'user_id': the_user_id})
+                      'user_id': the_user_id,
+                      'profil_image_url' : user_profile_image_url,
+                      'offline_image_url' : offline_image_url
+                       })
                     this.lives.push(res.data.data[0]);
                     this.loading = false;
                   }else{
                     this.followed.push({
                       'username': to_name, 
                       'status': 'not live', 
-                      'user_id': the_user_id})
+                      'user_id': the_user_id,
+                      'profil_image_url' : user_profile_image_url,
+                      'offline_image_url' : offline_image_url
+                      })
                     this.loading = false;
                   }
                 })
@@ -129,3 +132,27 @@ export default {
   }
 }
 </script>
+
+<style>
+.stream__tuile{
+    display: inline-block;
+    width: 300px;
+    height: 300px; 
+    content: '';
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.stream__tuile.isActive{
+    border:2px solid red;
+}
+
+ul{
+    list-style: none;
+}
+
+.stream{
+    display: inline-block;
+}
+</style>
