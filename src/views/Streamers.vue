@@ -1,7 +1,8 @@
 <template>
   <div class="hello">
-    
+    <h1>{{$route.params.user_id}}</h1>
     <div v-if="!loading">
+        
       <h2>Twitchers you follow: </h2>
       <ul>
         <li v-for="acti in activ" v-bind:key="acti.user_id">{{acti.username}} {{acti.status}}</li>
@@ -22,11 +23,11 @@
 //import db from '@/firebase/init'
 import axios from 'axios'
 export default {
-  name: 'HelloWorld',
+  name: 'Streamers',
   data() {
     return{
       username: '',
-      id:'',
+      id: this.$route.params.user_id,
       lives: [],
       videos: [],
       followed: [],
@@ -36,9 +37,6 @@ export default {
           headers: {'Client-ID': 'bj4n17r5g7ztuog08idhnllq04yivm'}
       }
     }
-  },
-  props: {
-    msg: String
   },
   computed: {
     activ: function(){
@@ -105,7 +103,6 @@ export default {
                       'status': 'not live', 
                       'user_id': the_user_id})
                     this.loading = false;
-
                   }
                 })
                 .catch((err) =>{
@@ -127,23 +124,8 @@ export default {
     }
 
   },
+  created(){
+      this.getFollows();
+  }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
